@@ -29,10 +29,14 @@
 <%@ include file="include/login.jsp"%>
 <% 
 	NewsDTO recentNews = null; 
-	PostDTO recentPost = null;
+	PostDTO recentPost1 = null;
+	PostDTO recentPost2 = null;
+				
 	String newsPath = "";
-	String postPath = "";
 	String newsTitle = "";
+	
+	String postPath1 = "";
+	String postPath2 = "";
 	String postTitle = "";
 	
 	if( (recentNews = NewsDAO.select()) == null) {
@@ -42,12 +46,13 @@
 		newsPath = recentNews.getNupfolder() +"/"+ recentNews.getNuuid() +"_" + recentNews.getNfilename();
 		newsTitle = recentNews.getNtitle();
 	}
-	if( (recentPost = PostDAO.select()) == null) {
-		postPath = "images/postThumb.jpg";
-		newsTitle = "업로드된 주보가 없습니다.";
+	if( (recentPost1 = PostDAO.select(1)) == null || (recentPost2 = PostDAO.select(2)) == null) {
+		postPath1 = "images/postThumb.jpg";
+		postTitle = "업로드된 주보가 없습니다.";
 	} else {
-		postPath = recentPost.getPupfolder() +"/"+ recentPost.getPuuid() +"_" + recentPost.getPfilename();
-		postTitle = recentPost.getPtitle();
+		postPath1 = recentPost1.getPupfolder() +"/"+ recentPost1.getPuuid() +"_" + recentPost1.getPfilename();
+		postPath2 = recentPost2.getPupfolder() +"/"+ recentPost2.getPuuid() +"_" + recentPost2.getPfilename();
+		postTitle = recentPost1.getPtitle();
 	}
 
 %>
@@ -78,7 +83,7 @@
 							<img src="images/newsThumb.jpg" alt="img02" class="img-responsive" style="width:100%; height:400px;" />
 							<figcaption>
 								<h2>교회 소식</h2>
-								<p>예배 날짜와 시간</p>
+								<p>예배 안내</p>
 								<a href="#" data-toggle="modal" data-target="#Modal-1">View more</a>
 							</figcaption>
 						</figure>
@@ -96,7 +101,7 @@
 								<img src="images/postThumb.jpg" alt="img02" class="img-responsive" style="width:100%; height:400px;" />
 							<figcaption>
 								<h2>주보</h2>
-								<p>2월 21일 주보</p>
+								<p><%=postTitle %></p>
 								<a href="#" data-toggle="modal" data-target="#Modal-2">View more</a>
 							</figcaption>
 						</figure>
@@ -114,7 +119,7 @@
 							<div id="imgList" style="width:100%; height:400px;"></div>
 							<figcaption>
 								<h2>갤러리</h2>
-								<p>갤러리 보기</p>
+								<p>갤러리로 이동</p>
 								<a href="gallery.jsp">View more</a>
 							</figcaption>
 						</figure>
@@ -171,7 +176,10 @@
 						<h4 class="modal-title" id="Modal-label-2"><%=postTitle %></h4>
 					</div>
 					<div class="modal-body">
-						<img src="<%=postPath %>" alt="img01" class="img-responsive" />
+						<img src="<%=postPath1 %>" alt="img01" class="img-responsive">
+						<%if(postPath2 != "") {%>
+						<img src="<%=postPath2 %>" alt="img01" class="img-responsive">
+						<%} %>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -180,74 +188,7 @@
 			</div>
 		</div>
 
-<!-- 관리자로그인 모달 -->
-<div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
-  <div class="modal-dialog" >
-    <div class="modal-content" style="border-radius:10px;">
-      <div class="modal-header" >
-        <h1 class="modal-title fs-5" id="msgModalLabel">관리자 로그인</h1>
-      </div>
-      <div class="modal-body" id="newsmsgModalBody" style="padding:30px;">
-		<form action="login.jsp" method="post" id="loginForm">
-			<label class="form-label" for="pw">비밀번호</label>
-			<input class="form-control mb-3" type="password" name="pw" id="pw">
-		</form>
-      </div>
-      <div class="modal-footer">
-        <button style="border-radius:10px;" type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-		<button style="border-radius:10px;" type="button" class="btn btn-warning" data-bs-dismiss="modal" onclick="login()">로그인</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- 소식 등록 모달 -->
-<div class="modal fade" id="newsUploadModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
-  <div class="modal-dialog" >
-    <div class="modal-content" style="border-radius:10px;">
-      <div class="modal-header" >
-        <h1 class="modal-title fs-5" id="msgModalLabel">사진 등록</h1>
-      </div>
-      <div class="modal-body" id="newsmsgModalBody" style="padding:30px;">
-		<form action="newsUpload.jsp" method="post" enctype="multipart/form-data" id="newsimgForm">
-			<label class="form-label" for="title">제목</label>
-			<input class="form-control mb-3" type="text" name="title" id="title">
-			<label class="form-label" for="image">사진 선택</label>
-			<input class="form-control" type="file" accept="image/*" name="image" id="image" >
-		</form>
-      </div>
-      <div class="modal-footer">
-        <button style="border-radius:10px;" type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-		<button style="border-radius:10px;" type="button" class="btn btn-warning" data-bs-dismiss="modal" id="newsdoneBtn">등록</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- 주보 등록 모달 -->
-<div class="modal fade" id="postUploadModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="msgModalLabel" aria-hidden="true">
-  <div class="modal-dialog" >
-    <div class="modal-content"  style="border-radius:10px;">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="msgModalLabel">주보 등록</h1>
-      </div>
-      <div class="modal-body" id="postmsgModalBody" style="padding:30px;">
-		<form action="postUpload.jsp" method="post" enctype="multipart/form-data" id="postimgForm">
-			<label class="form-label" for="title">제목</label>
-			<input class="form-control mb-3" type="text" name="title" id="title">
-			<label class="form-label" for="image">사진 선택</label>
-			<input class="form-control" type="file" accept="image/*" name="image" id="image">
-		</form>
-      </div>
-      <div class="modal-footer" id="modal-footer">
-        <button style="border-radius:10px;" type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">취소</button>
-		<button style="border-radius:10px; "type="button" class="btn btn-warning" data-bs-dismiss="modal" id="postdoneBtn">등록</button>
-      </div>
-    </div>
-  </div>
-</div>
+		<%@ include file="include/uploadModals.jsp"%>
 
 		<!-- Bootstrap core JavaScript
 			================================================== -->
@@ -313,12 +254,14 @@
 			function regPost(){
 				$('#postUploadModal').modal('show');
 			}
-
+			
+			// 업로드 된 파일 갯수 2개 초과 시, 업로드 하지 않고 alert창 띄우기
 			$('#postdoneBtn').on('click', function(){
-				if (true) {
-					$('#postimgForm').submit();
+				if ( $('#image').length > 2 ) {
+					alert('등록할 수 있는 사진 개수를 초과하였습니다. /n이미지 파일로 최대 2개까지 업로드 가능합니다.');
+					return;
 				} else {
-					//popModal('사진 등록 실패', '입력 값이 없는 항목이 있습니다.')
+					$('#postimgForm').submit();
 				}
 			});
 			
