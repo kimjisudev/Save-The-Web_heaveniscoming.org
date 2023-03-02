@@ -11,9 +11,9 @@ import util.ConnectionPool;
 
 public class PostDAO {
    // insert
-   public static boolean insert(String title, String upfolder, String filename, String uuid) {
+   public static boolean insert(String title, String upfolder, String uuid, String filename, int page) {
       boolean result = false;
-      String sql = "INSERT INTO post (ptitle, pupfolder, puuid, pfilename) VALUES (?, ?, ?, ?)";
+      String sql = "INSERT INTO post (ptitle, pupfolder, puuid, pfilename, ppage) VALUES (?, ?, ?, ?, ?)";
       Connection conn = null;
       PreparedStatement pstmt = null;
       try {
@@ -23,6 +23,7 @@ public class PostDAO {
          pstmt.setString(2, upfolder);
          pstmt.setString(3, uuid);
          pstmt.setString(4, filename);
+         pstmt.setInt(5, page);
          
          result = pstmt.executeUpdate() == 1 ? true : false;
       } catch (SQLException | NamingException e) {
@@ -34,7 +35,7 @@ public class PostDAO {
    }
    
  //사진 최근꺼 하나 꺼내기
-   public static PostDTO select() throws SQLException, NamingException  {
+   public static PostDTO select(int ppage) throws SQLException, NamingException  {
    	
    	Connection conn = null;
    	PreparedStatement pstmt = null;
@@ -42,10 +43,11 @@ public class PostDAO {
    	PostDTO pdto = null;
    	
    	try {
-   		String sql = "SELECT * FROM post WHERE pdate = (SELECT MAX(pdate) FROM post)";
+   		String sql = "SELECT * FROM post WHERE ppage = ?";
 
    		conn = ConnectionPool.get();
    		pstmt = conn.prepareStatement(sql);
+   		pstmt.setInt(1, ppage);
    				
    		rs = pstmt.executeQuery(); 	
    		
@@ -56,6 +58,7 @@ public class PostDAO {
    			pdto.setPupfolder(rs.getString("pupfolder"));
    			pdto.setPuuid(rs.getString("puuid"));
    			pdto.setPfilename(rs.getString("pfilename"));
+   			pdto.setPpage(rs.getInt("ppage"));
    			pdto.setPdate(rs.getString("pdate"));
    			
    		} return pdto;
@@ -67,6 +70,7 @@ public class PostDAO {
    	}
 
    }
+   
    // DB 데이터 전체 삭제
    public static boolean delete() {
       boolean result = false;

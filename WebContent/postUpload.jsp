@@ -55,6 +55,9 @@
 	//우리의 경우 input type="file" 가 FileItem에 담기고
 	upload.setHeaderEncoding("UTF-8");
 	List<FileItem> items = upload.parseRequest(request); //업로드 컴포넌트에게 클라이언트의 요청 정보를 전달한다!!!
+
+	// DB 전부 삭제
+	PostDAO.delete();
 	
 	String title = "";
 	for(FileItem item : items){
@@ -65,25 +68,31 @@
 		} else { //텍스트박스가 아닌것만 업로드 처리!! FormField는 text박스만 의미함
 			//업로드 처리하자!! 메모리상의 이미지 정보를 실제 물리적 파일로 저장하자!!
 			//새롭게  생성할 파일명
-			out.print("당신이 업로드한 파일의 원래 이름은 "+item.getName());
+			String imgFileName = item.getName();
+			//out.print("당신이 업로드한 파일의 원래 이름은 "+imgFileName);
 			
 			// UUID 설정
 			UUID uuid = UUID.randomUUID();
-			String uuidFileName = uuid + "_" + item.getName();
+			String uuidFileName = uuid + "_" + imgFileName;
 			System.out.println("uuidFileName : " + uuidFileName);
 		
-			//String ext = FileManager.getExtend(item.getName());//확장자 구하기
+			//String ext = FileManager.getExtend(imgFileName);//확장자 구하기
 			//String filename = System.currentTimeMillis()+"."+ext;
 			
 			File file =new File(savePath+"/"+uuidFileName);//비어있는 파일
 			item.write(file); //저장 정보를 File 클래스의 인스턴스로 전달!!
 			
-			// DB 전부 삭제
-			PostDAO.delete();
+			System.out.println( imgFileName.substring(imgFileName.length()-7, imgFileName.length()-4) );
+			int ppage = 0;
+			if( imgFileName.substring(imgFileName.length()-7, imgFileName.length()-4).equals("001") ) {
+				ppage = 1;
+			} else if( imgFileName.substring(imgFileName.length()-7, imgFileName.length()-4).equals("002") ) {
+				ppage = 2;
+			} 
 			// DB에 넣기
-		    PostDAO.insert(title, uploadPath, item.getName(), uuid.toString());
+		    PostDAO.insert(title, uploadPath, uuid.toString(), imgFileName, ppage);
 			
-			out.print("원래 파일명: "+item.getName()+"<br>");
+			out.print("원래 파일명: "+imgFileName+"<br>");
 			out.print("생성된 파일명: "+uuidFileName+"<br>");
 			out.print("저장된 위치: "+savePath+"<br>");
 			out.print("업로드 파일크기: "+item.getSize()+" bytes  <br>");

@@ -6,7 +6,9 @@ public class PostDTO {
 	private String pupfolder;
 	private String puuid;
 	private String pfilename;
+	private int ppage;
 	private String pdate;
+	
 	public int getPno() {
 		return pno;
 	}
@@ -43,13 +45,22 @@ public class PostDTO {
 	public void setPdate(String pdate) {
 		this.pdate = pdate;
 	}
-	public PostDTO(int pno, String ptitle, String pupfolder, String puuid, String pfilename, String pdate) {
+	
+	public int getPpage() {
+		return ppage;
+	}
+	public void setPpage(int ppage) {
+		this.ppage = ppage;
+	}
+	public PostDTO(int pno, String ptitle, String pupfolder, String puuid, String pfilename, int ppage,
+			String pdate) {
 		super();
 		this.pno = pno;
 		this.ptitle = ptitle;
 		this.pupfolder = pupfolder;
 		this.puuid = puuid;
 		this.pfilename = pfilename;
+		this.ppage = ppage;
 		this.pdate = pdate;
 	}
 	public PostDTO() {
