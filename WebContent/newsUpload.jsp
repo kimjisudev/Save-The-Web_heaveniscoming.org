@@ -22,21 +22,23 @@
 %>
 <%
 	// 해당 앱 내 업로드 경로 설정
-	String uploadPath = "/resources/news";
+	//String uploadPath = "/resources/news";
 	// 실제 업로드 저장 경로 설정
-	String savePath = application.getRealPath(uploadPath);
+	//String savePath = application.getRealPath(uploadPath);
+	
+	// cafe24 업로드
+	String uploadPath = "/upload/news";
+	String savePath = "/nationschurch/tomcat/webapps" + uploadPath;
 	
 	File uploadDir = new File(uploadPath);
-	if(uploadDir.exists()){
-		uploadDir.delete();
+	if(!uploadDir.exists()){
+		uploadDir.mkdirs();
 	}
-	uploadDir.mkdirs();
 	
 	File saveDir = new File(savePath);
-	if(saveDir.exists()){
-		saveDir.delete();
+	if(!saveDir.exists()){
+		saveDir.mkdirs();
 	}
-	saveDir.mkdirs();
 	
 	int maxSize=50*1024*1024; //50M byte제한
 	//업로드 객체를 생성해주는 팩토리 객체 : 주로 설정을 담당(서버의 저장경로, 파일의용량제한..)
